@@ -29,13 +29,32 @@
 
 namespace GemRB {
 
-void XboxLogger::WriteLogMessage(const LogMessage& msg)
+XboxLogger::XboxLogger()
+	: Logger::LogWriter(DEBUG)
+{}
+
+void XboxLogger::WriteLogMessage(const Logger::LogMessage& msg)
 {
 #ifdef XBOX
-	// Output to Xbox debug console (visible with debugging tools)
-	std::string logLine = fmt::format("[{}] {}: {}\n", 
-		msg.owner, LogLevelName(msg.level), msg.message);
-	
+	// Log level names matching the ones used in Stdio.cpp
+	static const std::string LogLevelText[] = {
+		"FATAL",
+		"ERROR",
+		"WARN",
+		"", // MESSAGE
+		"COMBAT",
+		"DEBUG"
+	};
+
+	const auto& lvlTxt = LogLevelText[msg.level];
+	std::string logLine;
+
+	if (!lvlTxt.empty()) {
+		logLine = "[" + lvlTxt + "] " + msg.owner + ": " + msg.message + "\n";
+	} else {
+		logLine = msg.owner + ": " + msg.message + "\n";
+	}
+
 	// Write to debug output for NXDK debugging
 	debugPrint(logLine.c_str());
 	
@@ -54,14 +73,13 @@ void XboxLogger::WriteLogMessage(const LogMessage& msg)
 	}
 #else
 	// Fallback for non-Xbox builds
-	std::cerr << fmt::format("[{}] {}: {}\n", 
-		msg.owner, LogLevelName(msg.level), msg.message);
+	std::cerr << "[" << msg.owner << "] " << msg.message << std::endl;
 #endif
 }
 
-LogWriterPtr createXboxLogger()
+Logger::WriterPtr createXboxLogger()
 {
-	return std::make_unique<XboxLogger>();
+	return std::make_shared<XboxLogger>();
 }
 
 }

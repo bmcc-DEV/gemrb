@@ -20,19 +20,19 @@
 #ifndef XBOXLOGGER_H
 #define XBOXLOGGER_H
 
-#include "System/Logging/LogWriter.h"
+#include "Logging/Logger.h"
 
 namespace GemRB {
 
-class XboxLogger : public LogWriter {
+class XboxLogger : public Logger::LogWriter {
 public:
+	XboxLogger();
 	~XboxLogger() override = default;
 
-	void WriteLogMessage(const LogMessage& msg) override;
+	void WriteLogMessage(const Logger::LogMessage& msg) override;
 };
 
-LogWriterPtr createXboxLogger();
-
+Logger::WriterPtr createXboxLogger();
 }
 
 #endif

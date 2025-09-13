@@ -20,7 +20,10 @@
 // GemRB.cpp : Defines the entry point for Xbox application.
 
 #include "Interface.h"
+#include "InterfaceConfig.h"
 #include "XboxLogger.h"
+
+#include "Logging/Logging.h"
 
 #include <Python.h>
 #include <SDL.h>
