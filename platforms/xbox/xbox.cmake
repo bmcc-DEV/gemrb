@@ -59,3 +59,10 @@ IF(NOT DEFINED ENV{NXDK_DIR} AND XBOX)
 	MESSAGE(WARNING "Make sure you're using the NXDK toolchain file:")
 	MESSAGE(WARNING "  -DCMAKE_TOOLCHAIN_FILE=$NXDK_DIR/share/toolchain-nxdk.cmake")
 ENDIF()
+
+# Xbox-specific fix for Windows long path issues
+# This ensures compatibility with deep directory structures often seen in Xbox development
+IF(WIN32)
+	SET(CMAKE_OBJECT_PATH_MAX 300 CACHE STRING "Maximum object file path length for Xbox builds")
+	MESSAGE(STATUS "Xbox build: CMAKE_OBJECT_PATH_MAX set to ${CMAKE_OBJECT_PATH_MAX}")
+ENDIF()

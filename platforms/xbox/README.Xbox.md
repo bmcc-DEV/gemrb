@@ -198,10 +198,24 @@ GemRB on Xbox now includes specialized audio optimizations:
 ## Troubleshooting
 
 ### Common Issues
+
+#### Runtime Issues
 1. **Game won't start**: Check that GemRB.cfg paths are correct for Xbox filesystem
 2. **Memory errors**: Reduce party size and disable unnecessary features
 3. **Audio problems**: Ensure AudioDriver is set to "sdlaudio"
 4. **Controller not working**: Verify controller is connected before starting
+
+#### Build Issues
+1. **CMake error "object file directory has XXX characters"**: This occurs when build paths exceed Windows' 250-character limit
+   - **Solution**: The repository now includes automatic path length handling
+   - The `CMAKE_OBJECT_PATH_MAX` is automatically set to 300 for Xbox builds
+   - Use shorter directory names when possible (e.g., `C:\xbox\gemrb` instead of deep folder structures)
+   - If still encountering issues, try building from a shorter root path
+
+2. **"NXDK_DIR not set" during CMake configuration**: Ensure NXDK environment is properly configured
+   - Set `NXDK_DIR` environment variable to your NXDK installation path
+   - Restart command prompt after setting environment variables
+   - Use the provided build scripts which include environment validation
 
 ### Debug Information
 Debug output is written to:
