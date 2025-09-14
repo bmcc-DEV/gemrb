@@ -28,6 +28,10 @@
 
 #include <SDL.h>
 
+#ifdef XBOX
+#include "XboxAudioOptimizations.h"
+#endif
+
 namespace GemRB {
 
 static constexpr uint8_t RESERVED_CHANNELS = 1;
@@ -329,11 +333,36 @@ bool SDLAudioBackend::Init()
 		Log(ERROR, "SDLAudio", "InitSubSystem failed: {}", SDL_GetError());
 		return false;
 	}
+
+#ifdef XBOX
+	// Use Xbox-optimized audio settings
+	int xboxFreq = XboxAudioOptimizer::GetOptimalFrequency();
+	int xboxBufferSize = static_cast<int>(XboxAudioOptimizer::GetOptimalBufferSize());
+	int xboxChannels = 2; // Stereo for Xbox
+	
+	Log(MESSAGE, "SDLAudio", "Xbox: Using optimized audio settings - Freq: {}, Buffer: {}, Channels: {}", 
+		xboxFreq, xboxBufferSize, xboxChannels);
+	
+	if (Mix_OpenAudio(xboxFreq, MIX_DEFAULT_FORMAT, xboxChannels, xboxBufferSize) < 0) {
+		// Fallback to default settings if Xbox settings fail
+		Log(WARNING, "SDLAudio", "Xbox optimized settings failed, falling back to defaults");
+		if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
+			return false;
+		}
+	}
+	
+	// Use Xbox-optimized channel count
+	int maxChannels = XboxAudioOptimizer::GetMaxConcurrentChannels();
+	ChannelManager::Init(maxChannels, RESERVED_CHANNELS);
+#else
+	// Default settings for non-Xbox platforms
 	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
 		return false;
 	}
-
+	
 	ChannelManager::Init(24, RESERVED_CHANNELS);
+#endif
+
 	Mix_QuerySpec(&audioRate, &audioFormat, &audioChannels);
 
 	return true;
@@ -361,7 +390,14 @@ Holder<SoundSourceHandle> SDLAudioBackend::CreatePlaybackSource(const AudioPlayb
 
 Holder<SoundStreamSourceHandle> SDLAudioBackend::CreateStreamable(const AudioPlaybackConfig&, size_t minQueueSize)
 {
+#ifdef XBOX
+	// Use Xbox-optimized buffer size for streaming
+	size_t xboxOptimalSize = XboxAudioOptimizer::GetOptimalBufferSize(true); // true for music
+	size_t bufferSize = std::max(minQueueSize, xboxOptimalSize);
+	return MakeHolder<SDLSoundStreamSourceHandle>(audioChannels * bufferSize);
+#else
 	return MakeHolder<SDLSoundStreamSourceHandle>(audioChannels * minQueueSize);
+#endif
 }
 
 Holder<SoundBufferHandle> SDLAudioBackend::LoadSound(ResourceHolder<SoundMgr> resource, const AudioPlaybackConfig&)

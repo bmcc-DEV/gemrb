@@ -20,6 +20,7 @@
 // GemRB.cpp : Defines the entry point for Xbox application.
 
 #include "Interface.h"
+#include "XboxAudioOptimizations.h"
 #include "XboxLogger.h"
 
 #include <Python.h>
@@ -27,15 +28,28 @@
 #include <clocale> //language encoding
 
 #ifdef XBOX
-#include <hal/debug.h>
-#include <xboxkrnl/xboxkrnl.h>
-#include <windows.h>
+	#include <hal/debug.h>
+	#include <windows.h>
+	#include <xboxkrnl/xboxkrnl.h>
 #endif
 
 // Memory allocation for Xbox - use conservative values due to 64MB limit
 #ifdef XBOX
 // Reserve about 48MB for GemRB, leaving 16MB for system
 static const size_t XBOX_HEAP_SIZE = 48 * 1024 * 1024;
+
+// Xbox soundtrack paths - where Xbox stores its music files
+static const char* XBOX_SOUNDTRACK_PATHS[] = {
+	"C:\\TDATA\\FFFE0000\\music\\", // Xbox soundtrack directory
+	"E:\\UDATA\\soundtrack\\", // User soundtrack directory
+	"F:\\UDATA\\soundtrack\\", // Alternative user soundtrack
+	"C:\\UDATA\\soundtrack\\", // System user soundtrack
+	nullptr
+};
+
+// Xbox audio optimization settings
+static const size_t XBOX_AUDIO_BUFFER_SIZE = 8192; // Smaller buffer for memory efficiency
+static const int XBOX_MAX_SIMULTANEOUS_SOUNDS = 16; // Limit concurrent sounds
 #endif
 
 char* xboxArgv[3];
@@ -46,12 +60,12 @@ void XboxSetArguments(int* argc, char** argv[])
 #ifdef XBOX
 	int xboxArgc = 1;
 	xboxArgv[0] = (char*) "gemrb";
-	
+
 	// Check if config file exists and use it
-	HANDLE hFile = CreateFile("E:\\GemRB\\GemRB.cfg", 
-		GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 
-		FILE_ATTRIBUTE_NORMAL, NULL);
-	
+	HANDLE hFile = CreateFile("E:\\GemRB\\GemRB.cfg",
+				  GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
+				  FILE_ATTRIBUTE_NORMAL, NULL);
+
 	if (hFile != INVALID_HANDLE_VALUE) {
 		CloseHandle(hFile);
 		xboxArgv[1] = (char*) "-c";
@@ -59,7 +73,7 @@ void XboxSetArguments(int* argc, char** argv[])
 		xboxArgv[2] = configPath;
 		xboxArgc = 3;
 	}
-	
+
 	*argc = xboxArgc;
 	*argv = xboxArgv;
 #else
@@ -70,6 +84,30 @@ void XboxSetArguments(int* argc, char** argv[])
 #endif
 }
 
+// Xbox soundtrack discovery function
+#ifdef XBOX
+void XboxDiscoverSoundtracks()
+{
+	debugPrint("Xbox: Discovering available soundtracks...\n");
+
+	// Initialize the Xbox soundtrack manager
+	XboxSoundtrackManager::GetInstance().Initialize();
+
+	if (XboxSoundtrackManager::GetInstance().IsXboxSoundtrackAvailable()) {
+		debugPrint("Xbox: Soundtrack integration enabled\n");
+
+		// Set audio optimizations for Xbox
+		debugPrint("Xbox: Applying audio optimizations...\n");
+		debugPrint("Xbox: Buffer size: %d, Max channels: %d, Frequency: %d\n",
+			   static_cast<int>(XboxAudioOptimizer::GetOptimalBufferSize()),
+			   XboxAudioOptimizer::GetMaxConcurrentChannels(),
+			   XboxAudioOptimizer::GetOptimalFrequency());
+	} else {
+		debugPrint("Xbox: No soundtracks found, using default audio settings\n");
+	}
+}
+#endif
+
 using namespace GemRB;
 
 int main(int argc, char* argv[])
@@ -77,10 +115,10 @@ int main(int argc, char* argv[])
 #ifdef XBOX
 	// Initialize Xbox-specific systems
 	HalInitiateShutdown();
-	
+
 	// Set up minimal memory management
 	// Xbox has limited memory, so we need to be conservative
-	
+
 	// Initialize debug output early
 	debugPrint("GemRB starting on Xbox...\n");
 #endif
@@ -104,6 +142,10 @@ int main(int argc, char* argv[])
 #endif
 
 	try {
+#ifdef XBOX
+		// Initialize Xbox soundtrack discovery
+		XboxDiscoverSoundtracks();
+#endif
 		Interface gemrb(LoadFromArgs(argc, argv));
 		gemrb.Main();
 	} catch (CoreInitializationException& cie) {

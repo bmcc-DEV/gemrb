@@ -51,9 +51,18 @@ cmake .. \
   -DUSE_OPENAL=OFF \
   -DUSE_FREETYPE=OFF \
   -DUSE_LIBVLC=OFF \
-  -DCMAKE_BUILD_TYPE=Release
+  -DCMAKE_BUILD_TYPE=Release \
+  -DXBOX_AUDIO_OPTIMIZATIONS=ON \
+  -DXBOX_MEMORY_OPTIMIZATIONS=ON
 make
 ```
+
+### Enhanced Xbox Optimizations
+When building with `-DXBOX=ON`, the following optimizations are automatically enabled:
+- **Performance:** -O3 optimization, function inlining, loop unrolling
+- **Memory:** Disabled exceptions and RTTI, dead code elimination
+- **Audio:** Optimized buffer sizes and channel limits
+- **Linking:** Static linking with size optimization
 
 ### Installing to Xbox
 1. Copy the built executable to your Xbox: `E:\GemRB\GemRB.xbe`
@@ -73,22 +82,30 @@ Height=480
 Bpp=16
 Fullscreen=1
 
-# Audio settings
+# Audio settings with Xbox optimizations
 AudioDriver=sdlaudio
+VolumeMusic=75
+VolumeAmbients=75
 
 # Xbox filesystem paths
 CachePath=E:\GemRB\Cache2\
 GemRBPath=E:\GemRB\
 GamePath=E:\GemRB\[YourGameFolder]\
 
+# Xbox soundtrack integration - NEW FEATURE
+XboxSoundtrackPath=C:\TDATA\FFFE0000\music\
+XboxUserSoundtrackPath=E:\UDATA\soundtrack\
+EnableXboxSoundtracks=1
+
 # Performance optimizations for Xbox
 GamepadPointerSpeed=5
 MaxPartySize=6
 TooltipDelay=500
 
-# Memory optimizations
+# Memory optimizations (automatically applied on Xbox)
 MemoryOptimizations=1
 ReduceScriptingMemory=1
+XboxAudioOptimizations=1
 ```
 
 ## Controls
@@ -114,6 +131,23 @@ The original Xbox has only 64MB of RAM, so several optimizations are in place:
 - Disabled Python site packages and user directories
 - Optimized texture loading and caching
 - Reduced script memory allocation
+- **NEW:** Xbox-specific audio buffer optimizations
+- **NEW:** Reduced concurrent audio channel limits
+- **NEW:** Lower audio frequency for memory efficiency
+
+### Audio Optimizations
+GemRB on Xbox now includes specialized audio optimizations:
+- Buffer size reduced from 16KB to 8KB for regular audio, 4KB for music
+- Maximum concurrent sounds limited to 16 (down from 24)
+- Audio frequency optimized to 22050Hz for better memory usage
+- Xbox soundtrack integration for playing system music files
+
+### Xbox Soundtrack Integration
+**NEW FEATURE:** GemRB can now play Xbox system soundtracks and user music:
+- Automatically detects Xbox soundtrack directories
+- Supports both system soundtracks and user-ripped music
+- Integrates seamlessly with GemRB's music system
+- Configurable through GemRB.cfg settings
 
 ### Recommended Game Settings
 - Use 16-bit color depth for better performance

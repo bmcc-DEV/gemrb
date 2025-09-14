@@ -19,12 +19,12 @@
 
 #include "XboxLogger.h"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 #ifdef XBOX
-#include <hal/debug.h>
-#include <xboxkrnl/xboxkrnl.h>
+	#include <hal/debug.h>
+	#include <xboxkrnl/xboxkrnl.h>
 #endif
 
 namespace GemRB {
@@ -33,29 +33,29 @@ void XboxLogger::WriteLogMessage(const LogMessage& msg)
 {
 #ifdef XBOX
 	// Output to Xbox debug console (visible with debugging tools)
-	std::string logLine = fmt::format("[{}] {}: {}\n", 
-		msg.owner, LogLevelName(msg.level), msg.message);
-	
+	std::string logLine = fmt::format("[{}] {}: {}\n",
+					  msg.owner, LogLevelName(msg.level), msg.message);
+
 	// Write to debug output for NXDK debugging
 	debugPrint(logLine.c_str());
-	
+
 	// Also try to write to a log file on Xbox filesystem
 	static bool fileInit = false;
 	static std::ofstream logFile;
-	
+
 	if (!fileInit) {
 		logFile.open("E:\\GemRB\\gemrb.log", std::ios::app);
 		fileInit = true;
 	}
-	
+
 	if (logFile.is_open()) {
 		logFile << logLine;
 		logFile.flush();
 	}
 #else
 	// Fallback for non-Xbox builds
-	std::cerr << fmt::format("[{}] {}: {}\n", 
-		msg.owner, LogLevelName(msg.level), msg.message);
+	std::cerr << fmt::format("[{}] {}: {}\n",
+				 msg.owner, LogLevelName(msg.level), msg.message);
 #endif
 }
 

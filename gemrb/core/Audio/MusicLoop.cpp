@@ -24,10 +24,19 @@
 
 #include <chrono>
 
+#ifdef XBOX
+#include "XboxAudioOptimizations.h"
+#endif
+
 namespace GemRB {
 
 // balance between memory, number of calls and slow I/O
+#ifdef XBOX
+// Use smaller buffer for Xbox to conserve memory
+static constexpr uint32_t CHUNK_BUFFER_SIZE_MS = 100; // Reduced from 125ms
+#else
 static constexpr uint32_t CHUNK_BUFFER_SIZE_MS = 125;
+#endif
 
 MusicLoop::MusicLoop()
 {
