@@ -39,7 +39,28 @@ This port brings GemRB to the original Xbox console using the NXDK (Xbox Develop
 
 ## Building
 
-### Build Configuration
+### Automated Build Scripts (Recommended)
+**NEW: Automated Windows build scripts are now available to streamline the build process!**
+
+For Windows users, you can use the provided automated build scripts located in the repository root:
+
+- **`build_xbox.bat`** - Comprehensive batch script with full error checking and validation
+- **`quick_xbox_build.bat`** - Simple quick build for experienced users  
+- **`Build-Xbox.ps1`** - PowerShell version with enhanced features
+
+**Quick Start:**
+```cmd
+# From the GemRB repository root:
+build_xbox.bat              # Standard release build
+build_xbox.bat clean        # Clean build
+quick_xbox_build.bat        # Minimal output build
+```
+
+See `Xbox_Build_Scripts_README.md` in the repository root for detailed usage instructions.
+
+### Manual Build Configuration
+If you prefer to build manually or are using a non-Windows system:
+
 ```bash
 mkdir build && cd build
 cmake .. \
