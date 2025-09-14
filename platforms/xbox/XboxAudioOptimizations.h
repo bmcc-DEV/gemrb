@@ -34,6 +34,12 @@ static constexpr size_t XBOX_MUSIC_BUFFER_SIZE = 4096;
 static constexpr int XBOX_MAX_CONCURRENT_SOUNDS = 16;
 static constexpr int XBOX_AUDIO_FREQUENCY = 22050; // Lower freq to save memory
 
+// Enhanced Xbox audio capabilities
+static constexpr int XBOX_DSP_BUFFER_SIZE = 2048; // For Xbox DSP effects
+static constexpr int XBOX_SURROUND_CHANNELS = 6; // Xbox supports 5.1 surround
+static constexpr int XBOX_STEREO_CHANNELS = 2;
+static constexpr bool XBOX_ENABLE_SURROUND = true;
+
 // Xbox soundtrack integration
 class XboxSoundtrackManager {
 public:
@@ -74,6 +80,29 @@ public:
 
 	// Get maximum concurrent audio channels for Xbox
 	static int GetMaxConcurrentChannels();
+
+	// Enhanced Xbox audio capabilities
+	static bool IsSurroundSoundSupported();
+	static int GetSurroundChannelCount();
+	static size_t GetDSPBufferSize();
+};
+
+// Xbox hardware audio features integration
+class XboxAudioHardware {
+public:
+	// Xbox DSP (Digital Signal Processor) integration
+	static bool InitializeDSP();
+	static void EnableSurroundSound(bool enable);
+	static bool IsDolbyDigitalSupported();
+
+	// Xbox audio hardware detection
+	static bool IsXboxAudioHardwareDetected();
+	static int GetHardwareChannelCount();
+
+	// Xbox-specific audio effects
+	static void SetupXboxAudioEffects();
+	static void EnableXboxEchoEffect(bool enable);
+	static void EnableXboxReverbEffect(bool enable);
 };
 
 } // namespace GemRB

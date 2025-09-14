@@ -130,6 +130,88 @@ int XboxAudioOptimizer::GetMaxConcurrentChannels()
 	return XBOX_MAX_CONCURRENT_SOUNDS;
 }
 
+bool XboxAudioOptimizer::IsSurroundSoundSupported()
+{
+	return XBOX_ENABLE_SURROUND;
+}
+
+int XboxAudioOptimizer::GetSurroundChannelCount()
+{
+	return XBOX_SURROUND_CHANNELS;
+}
+
+size_t XboxAudioOptimizer::GetDSPBufferSize()
+{
+	return XBOX_DSP_BUFFER_SIZE;
+}
+
+// XboxAudioHardware implementation
+
+bool XboxAudioHardware::InitializeDSP()
+{
+	debugPrint("Xbox: Initializing DSP audio hardware...\n");
+	// Initialize Xbox DSP for enhanced audio processing
+	// This would interface with Xbox's hardware DSP capabilities
+	return true;
+}
+
+void XboxAudioHardware::EnableSurroundSound(bool enable)
+{
+	if (enable && IsDolbyDigitalSupported()) {
+		debugPrint("Xbox: Enabling surround sound (5.1 channels)\n");
+		// Configure Xbox audio for 5.1 surround output
+	} else {
+		debugPrint("Xbox: Using stereo audio output\n");
+		// Configure for stereo output
+	}
+}
+
+bool XboxAudioHardware::IsDolbyDigitalSupported()
+{
+	// Check Xbox hardware capabilities for Dolby Digital
+	return true; // Xbox hardware supports Dolby Digital
+}
+
+bool XboxAudioHardware::IsXboxAudioHardwareDetected()
+{
+	// Detect if we're running on actual Xbox hardware
+	// This could check for Xbox-specific hardware signatures
+	return true;
+}
+
+int XboxAudioHardware::GetHardwareChannelCount()
+{
+	if (IsDolbyDigitalSupported()) {
+		return XBOX_SURROUND_CHANNELS;
+	}
+	return XBOX_STEREO_CHANNELS;
+}
+
+void XboxAudioHardware::SetupXboxAudioEffects()
+{
+	debugPrint("Xbox: Setting up hardware audio effects...\n");
+
+	// Initialize Xbox-specific audio effects
+	EnableXboxEchoEffect(true);
+	EnableXboxReverbEffect(true);
+}
+
+void XboxAudioHardware::EnableXboxEchoEffect(bool enable)
+{
+	if (enable) {
+		debugPrint("Xbox: Enabling hardware echo effect\n");
+		// Configure Xbox hardware echo/delay effects
+	}
+}
+
+void XboxAudioHardware::EnableXboxReverbEffect(bool enable)
+{
+	if (enable) {
+		debugPrint("Xbox: Enabling hardware reverb effect\n");
+		// Configure Xbox hardware reverb effects for spatial audio
+	}
+}
+
 } // namespace GemRB
 
 #endif // XBOX

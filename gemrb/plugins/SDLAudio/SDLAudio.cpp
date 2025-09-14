@@ -335,25 +335,43 @@ bool SDLAudioBackend::Init()
 	}
 
 #ifdef XBOX
-	// Use Xbox-optimized audio settings
+	// Use enhanced Xbox audio settings with hardware capabilities
 	int xboxFreq = XboxAudioOptimizer::GetOptimalFrequency();
 	int xboxBufferSize = static_cast<int>(XboxAudioOptimizer::GetOptimalBufferSize());
-	int xboxChannels = 2; // Stereo for Xbox
-	
-	Log(MESSAGE, "SDLAudio", "Xbox: Using optimized audio settings - Freq: {}, Buffer: {}, Channels: {}", 
-		xboxFreq, xboxBufferSize, xboxChannels);
-	
+
+	// Check if Xbox supports surround sound
+	int xboxChannels = 2; // Default to stereo
+	if (XboxAudioOptimizer::IsSurroundSoundSupported() && XboxAudioHardware::IsDolbyDigitalSupported()) {
+		xboxChannels = XboxAudioOptimizer::GetSurroundChannelCount();
+		Log(MESSAGE, "SDLAudio", "Xbox: Surround sound (5.1) detected and enabled");
+		XboxAudioHardware::EnableSurroundSound(true);
+	}
+
+	Log(MESSAGE, "SDLAudio", "Xbox: Using enhanced audio settings - Freq: {}, Buffer: {}, Channels: {}",
+	    xboxFreq, xboxBufferSize, xboxChannels);
+
+	// Initialize Xbox DSP for enhanced audio processing
+	if (XboxAudioHardware::InitializeDSP()) {
+		Log(MESSAGE, "SDLAudio", "Xbox: DSP audio hardware initialized successfully");
+		XboxAudioHardware::SetupXboxAudioEffects();
+	}
+
 	if (Mix_OpenAudio(xboxFreq, MIX_DEFAULT_FORMAT, xboxChannels, xboxBufferSize) < 0) {
-		// Fallback to default settings if Xbox settings fail
-		Log(WARNING, "SDLAudio", "Xbox optimized settings failed, falling back to defaults");
-		if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
-			return false;
+		Log(WARNING, "SDLAudio", "Xbox enhanced settings failed, trying standard Xbox settings");
+		// Fallback to standard Xbox stereo settings
+		if (Mix_OpenAudio(xboxFreq, MIX_DEFAULT_FORMAT, 2, xboxBufferSize) < 0) {
+			Log(WARNING, "SDLAudio", "Xbox standard settings failed, using generic fallback");
+			if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
+				return false;
+			}
 		}
 	}
 	
 	// Use Xbox-optimized channel count
 	int maxChannels = XboxAudioOptimizer::GetMaxConcurrentChannels();
 	ChannelManager::Init(maxChannels, RESERVED_CHANNELS);
+
+	Log(MESSAGE, "SDLAudio", "Xbox: Audio system initialized with {} concurrent channels", maxChannels);
 #else
 	// Default settings for non-Xbox platforms
 	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {

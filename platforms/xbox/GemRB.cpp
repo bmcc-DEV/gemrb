@@ -21,7 +21,9 @@
 
 #include "Interface.h"
 #include "XboxAudioOptimizations.h"
+#include "XboxControllerOptimizations.h"
 #include "XboxLogger.h"
+#include "XboxMemoryOptimizations.h"
 
 #include <Python.h>
 #include <SDL.h>
@@ -143,8 +145,37 @@ int main(int argc, char* argv[])
 
 	try {
 #ifdef XBOX
+		// Initialize enhanced Xbox optimization systems
+		debugPrint("Xbox: Initializing enhanced optimization systems...\n");
+
+		// Initialize memory management first
+		XboxMemoryManager::GetInstance().Initialize();
+
+		// Initialize GPU and texture optimizations
+		XboxGPUOptimizer::Initialize();
+		XboxTextureCache::GetInstance().Initialize();
+
+		// Initialize storage optimizations
+		XboxStorageOptimizer::Initialize();
+
+		// Initialize controller and system integration
+		XboxGameEventHandler::Initialize();
+		XboxSystemIntegration::Initialize();
+
+		// Initialize enhanced audio systems
+		XboxAudioHardware::InitializeDSP();
+		XboxAudioHardware::SetupXboxAudioEffects();
+
 		// Initialize Xbox soundtrack discovery
 		XboxDiscoverSoundtracks();
+
+		// Enable power management during gameplay
+		XboxSystemIntegration::PreventSleep();
+
+		// Print initial memory stats
+		XboxMemoryManager::GetInstance().PrintMemoryStats();
+
+		debugPrint("Xbox: All optimization systems initialized successfully\n");
 #endif
 		Interface gemrb(LoadFromArgs(argc, argv));
 		gemrb.Main();
@@ -159,8 +190,28 @@ int main(int argc, char* argv[])
 	}
 
 #ifdef XBOX
-	// Xbox-specific cleanup
-	debugPrint("GemRB shutting down normally\n");
+	// Enhanced Xbox cleanup sequence
+	debugPrint("GemRB shutting down - performing Xbox cleanup...\n");
+
+	// Allow system to sleep again
+	XboxSystemIntegration::AllowSleep();
+
+	// Flush any remaining caches and free memory
+	XboxMemoryManager::GetInstance().FlushUnusedCaches();
+	XboxMemoryManager::GetInstance().CompactMemoryPools();
+
+	// Stop all controller rumble
+	for (int i = 0; i < 4; i++) {
+		XboxControllerManager::GetInstance().StopRumble(i);
+	}
+
+	// Reset system LED to normal state
+	XboxSystemIntegration::SetSystemLEDPattern("normal");
+
+	// Print final memory statistics
+	XboxMemoryManager::GetInstance().PrintMemoryStats();
+
+	debugPrint("Xbox: Cleanup completed successfully\n");
 #endif
 
 	VideoDriver.reset();

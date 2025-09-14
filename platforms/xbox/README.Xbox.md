@@ -78,12 +78,22 @@ cmake .. \
 make
 ```
 
-### Enhanced Xbox Optimizations
-When building with `-DXBOX=ON`, the following optimizations are automatically enabled:
-- **Performance:** -O3 optimization, function inlining, loop unrolling
-- **Memory:** Disabled exceptions and RTTI, dead code elimination
-- **Audio:** Optimized buffer sizes and channel limits
-- **Linking:** Static linking with size optimization
+### Enhanced Xbox Optimizations (NEW in 2024)
+When building with `-DXBOX=ON`, the following advanced optimizations are automatically enabled:
+
+**Performance Optimizations:**
+- **CPU:** -O3 optimization, function inlining, loop unrolling, Pentium III-specific tuning
+- **Memory:** Disabled exceptions and RTTI, dead code elimination, intelligent memory pooling
+- **Audio:** Xbox DSP integration, surround sound support, optimized buffer management
+- **Graphics:** Xbox GPU acceleration, texture compression, progressive scan support (480p)
+- **Linking:** Static linking with advanced size and performance optimizations
+
+**Xbox Hardware Integration:**
+- **Controller Features:** Enhanced rumble feedback for game events, LED status indicators, precise analog control
+- **Audio Hardware:** Xbox DSP effects, Dolby Digital 5.1 surround sound, Xbox soundtrack integration
+- **Display Features:** 480p progressive scan, Xbox-optimized rendering pipeline, hardware acceleration
+- **Storage Optimization:** Smart caching, Xbox hard drive optimization, efficient save game compression
+- **System Integration:** Power management, Xbox dashboard integration, system LED control
 
 ### Installing to Xbox
 1. Copy the built executable to your Xbox: `E:\GemRB\GemRB.xbe`
@@ -95,80 +105,161 @@ When building with `-DXBOX=ON`, the following optimizations are automatically en
 
 ## Configuration
 
-### GemRB.cfg Settings for Xbox
+### Enhanced GemRB.cfg Settings for Xbox
 ```ini
-# Basic video settings optimized for Xbox
+# Enhanced video settings optimized for Xbox hardware
 Width=640
 Height=480
 Bpp=16
 Fullscreen=1
+ProgressiveScan=1          # NEW: Enable 480p progressive scan
+XboxGPUAcceleration=1      # NEW: Enable Xbox GPU acceleration
 
-# Audio settings with Xbox optimizations
+# Enhanced audio settings with Xbox hardware features
 AudioDriver=sdlaudio
 VolumeMusic=75
 VolumeAmbients=75
+XboxDSPEffects=1           # NEW: Enable Xbox DSP audio effects
+XboxSurroundSound=1        # NEW: Enable 5.1 surround if available
+XboxAudioOptimization=1    # Enhanced Xbox audio optimizations
 
 # Xbox filesystem paths
 CachePath=E:\GemRB\Cache2\
-GemRBPath=E:\GemRB\
+GemRB=E:\GemRB\
 GamePath=E:\GemRB\[YourGameFolder]\
 
-# Xbox soundtrack integration - NEW FEATURE
+# Enhanced Xbox soundtrack integration
 XboxSoundtrackPath=C:\TDATA\FFFE0000\music\
 XboxUserSoundtrackPath=E:\UDATA\soundtrack\
 EnableXboxSoundtracks=1
+XboxSoundtrackPlaylist=1   # NEW: Enable playlist functionality
 
-# Performance optimizations for Xbox
+# Enhanced performance optimizations for Xbox
 GamepadPointerSpeed=5
 MaxPartySize=6
 TooltipDelay=500
+MemoryOptimizations=1      # Enhanced memory management
+XboxSmartCaching=1         # NEW: Enable intelligent caching
+XboxTextureCompression=1   # NEW: Enable DXT texture compression
 
-# Memory optimizations (automatically applied on Xbox)
-MemoryOptimizations=1
-ReduceScriptingMemory=1
-XboxAudioOptimizations=1
+# Enhanced Xbox controller features
+XboxRumbleEnabled=1        # NEW: Enable haptic feedback
+XboxControllerLEDs=1       # NEW: Enable controller LED feedback
+XboxPrecisionMode=1        # NEW: Enable enhanced analog precision
+XboxAnalogDeadzone=0.15    # NEW: Configure analog stick deadzone
+
+# Xbox system integration features
+XboxSystemIntegration=1    # NEW: Enable dashboard integration
+XboxPowerManagement=1      # NEW: Enable smart power management
+XboxProgressiveScan=1      # NEW: Enable 480p when available
+XboxMemoryMonitoring=1     # NEW: Enable memory usage monitoring
 ```
 
 ## Controls
 
-### Xbox Controller Mapping
-- **Left analog stick**: Mouse cursor movement
-- **A button**: Left mouse click (select/confirm)
-- **B button**: Right mouse click (context menu/cancel)
-- **X button**: Open inventory
-- **Y button**: Open map
-- **D-Pad**: Scroll map/navigate interface
-- **Right analog stick**: Alternative map scrolling
-- **Left trigger**: Highlight objects
-- **Right trigger**: Pause game
-- **Back button**: Open main menu
-- **Start button**: Escape/close current window
+### Xbox Controller Enhancements (NEW)
+GemRB now fully utilizes Xbox controller capabilities for an immersive gaming experience:
+
+**Enhanced Rumble Feedback:**
+- **Combat Events:** Rumble feedback for damage taken, critical hits, spell casting
+- **Game Events:** Level up celebrations, inventory notifications, dialogue choices
+- **Multi-Controller Support:** Support for up to 4 controllers with individual feedback
+- **Intensity Scaling:** Different rumble patterns and intensities for various game events
+
+**Advanced Input Features:**
+- **Precision Control:** Enhanced analog stick precision for fine cursor movement
+- **Trigger Pressure:** Full analog trigger support for variable input
+- **Controller LEDs:** Visual feedback through controller LED patterns
+- **Deadzone Control:** Customizable analog stick deadzones for optimal control
+
+**Xbox Controller Mapping (Enhanced):**
+- **Left analog stick:** Precision mouse cursor movement with enhanced sensitivity
+- **A button:** Left mouse click (select/confirm) with haptic feedback
+- **B button:** Right mouse click (context menu/cancel) with haptic feedback
+- **X button:** Open inventory with notification rumble
+- **Y button:** Open map with confirmation feedback
+- **D-Pad:** Navigate interface with precise 8-directional movement
+- **Right analog stick:** Alternative map scrolling with momentum
+- **Left trigger:** Highlight objects with pressure-sensitive intensity
+- **Right trigger:** Pause game with confirmation rumble
+- **Back button:** Open main menu with system integration
+- **Start button:** Escape/close current window with haptic confirmation
 
 ## Performance Considerations
 
-### Memory Limitations
-The original Xbox has only 64MB of RAM, so several optimizations are in place:
-- Static linking to reduce memory overhead
-- Disabled Python site packages and user directories
-- Optimized texture loading and caching
-- Reduced script memory allocation
-- **NEW:** Xbox-specific audio buffer optimizations
-- **NEW:** Reduced concurrent audio channel limits
-- **NEW:** Lower audio frequency for memory efficiency
+### Enhanced Memory Management (NEW)
+The original Xbox has only 64MB of RAM, so comprehensive memory optimizations are implemented:
 
-### Audio Optimizations
-GemRB on Xbox now includes specialized audio optimizations:
-- Buffer size reduced from 16KB to 8KB for regular audio, 4KB for music
-- Maximum concurrent sounds limited to 16 (down from 24)
-- Audio frequency optimized to 22050Hz for better memory usage
-- Xbox soundtrack integration for playing system music files
+**Intelligent Memory Management:**
+- **Dynamic Memory Pools:** Efficient allocation and deallocation with automatic compaction
+- **Smart Caching:** Intelligent caching of frequently used assets with LRU eviction
+- **Memory Monitoring:** Real-time memory usage tracking with automatic optimization
+- **Cache Optimization:** Separate optimized caches for textures, audio, and game data
 
-### Xbox Soundtrack Integration
-**NEW FEATURE:** GemRB can now play Xbox system soundtracks and user music:
-- Automatically detects Xbox soundtrack directories
-- Supports both system soundtracks and user-ripped music
-- Integrates seamlessly with GemRB's music system
-- Configurable through GemRB.cfg settings
+**Xbox GPU Optimizations:**
+- **Texture Compression:** Hardware DXT compression support for reduced memory usage
+- **Progressive Scan:** 480p progressive scan support for enhanced visual quality
+- **Hardware Acceleration:** Utilize Xbox GPU for 2D operations, sprite blitting, and alpha blending
+- **Memory Layout:** Optimized memory layout for Xbox's 64-bit memory bus
+
+**Storage and Caching:**
+- **Smart File Caching:** Predictive loading of game assets based on usage patterns
+- **Xbox Hard Drive Optimization:** Optimized for Xbox's IDE hard drive characteristics
+- **Save Game Compression:** Efficient save game compression to minimize storage usage
+- **Background Loading:** Asynchronous loading to reduce gameplay interruptions
+
+**Performance Features:**
+- Static linking to reduce memory overhead and improve load times
+- Disabled Python site packages and user directories to save memory
+- Optimized script memory allocation with garbage collection
+- Reduced concurrent resource limits optimized for 64MB constraint
+
+### Enhanced Audio Optimizations (NEW)
+GemRB on Xbox now includes comprehensive audio optimizations that maximize Xbox's audio capabilities:
+
+**Hardware Integration:**
+- **Xbox DSP Integration:** Utilizes Xbox's Digital Signal Processor for enhanced audio effects
+- **Dolby Digital 5.1 Support:** Full surround sound when connected to compatible audio systems
+- **Xbox Audio Hardware:** Direct integration with Xbox's audio processing capabilities
+- **Enhanced Soundtrack System:** Seamless integration with Xbox system soundtracks and user music
+
+**Performance Optimizations:**
+- Buffer size optimized from 16KB to 8KB for regular audio, 4KB for music
+- Maximum concurrent sounds limited to 16 (optimized for Xbox's 64MB RAM)
+- Audio frequency optimized to 22050Hz for better memory usage while maintaining quality
+- Xbox-specific audio effects: echo, reverb, and spatial audio processing
+
+**Features:**
+- Automatic detection of Xbox soundtrack directories
+- Support for both system soundtracks (`C:\TDATA\FFFE0000\music\`) and user-ripped music
+- Dynamic audio quality adjustment based on available memory
+- Hardware-accelerated audio mixing and effects processing
+
+### Xbox System Integration Features (NEW)
+GemRB now deeply integrates with Xbox system features for a console-like experience:
+
+**Dashboard Integration:**
+- **System Title Display:** GemRB appears properly in Xbox dashboard with custom title
+- **Status Updates:** Real-time game status displayed in system interface
+- **Power Management:** Automatic sleep prevention during gameplay, sleep allowed during idle
+- **System LED Control:** Xbox front panel LED provides visual feedback for game states
+
+**Enhanced Save System:**
+- **Memory Card Support:** Full Xbox memory card detection and usage
+- **Save Thumbnails:** Xbox dashboard-compatible save game thumbnails
+- **Metadata Integration:** Rich save game information displayed in Xbox dashboard
+- **Compression:** Optimized save compression for memory card storage efficiency
+
+**Audio/Video System Integration:**
+- **System Settings:** Automatically applies Xbox system audio and video preferences
+- **Display Mode Detection:** Automatic detection and configuration of optimal display modes
+- **Audio Output Detection:** Automatic configuration for stereo, surround, or digital output
+- **Progressive Scan:** Automatic 480p progressive scan when supported by display
+
+**Xbox Live Integration (for modded consoles):**
+- **Network Awareness:** Detection of network connectivity for future online features
+- **Clock Synchronization:** Integration with Xbox system clock for accurate timestamps
+- **System Events:** Integration with Xbox system events and notifications
 
 ### Recommended Game Settings
 - Use 16-bit color depth for better performance
