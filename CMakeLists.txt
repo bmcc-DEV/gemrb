@@ -100,6 +100,12 @@ INCLUDE_DIRECTORIES(
 INCLUDE(config)
 CONFIGURE_LINKING()
 CONFIGURE_COMPILER()
+
+# Xbox-specific dependency configuration (must be before other dependency configs)
+IF(XBOX)
+	INCLUDE(XboxDependencies)
+ENDIF()
+
 CONFIGURE_PYTHON()
 CONFIGURE_SDL(${SDL_BACKEND})
 CONFIGURE_OPENGL(${OPENGL_BACKEND} ${SDL_BACKEND})

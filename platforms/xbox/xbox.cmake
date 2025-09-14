@@ -84,12 +84,54 @@ ADD_DEFINITIONS("-DXBOX_DISPLAY_HEIGHT=480") # Standard Xbox resolution
 ADD_DEFINITIONS("-DXBOX_COLOR_DEPTH=16") # 16-bit color for better performance
 ADD_DEFINITIONS("-DXBOX_TEXTURE_COMPRESSION") # Enable DXT texture compression
 
-# When using NXDK toolchain, SDL detection should be handled by the toolchain
-# This message helps users understand they need the proper NXDK environment
-IF(NOT DEFINED ENV{NXDK_DIR} AND XBOX)
-	MESSAGE(WARNING "Building for Xbox without NXDK_DIR environment variable set.")
-	MESSAGE(WARNING "Make sure you're using the NXDK toolchain file:")
-	MESSAGE(WARNING "  -DCMAKE_TOOLCHAIN_FILE=$NXDK_DIR/share/toolchain-nxdk.cmake")
+# Enhanced NXDK environment validation for Xbox builds
+IF(XBOX)
+	IF(NOT DEFINED ENV{NXDK_DIR})
+		MESSAGE(FATAL_ERROR 
+			"Xbox build requires NXDK environment!\n"
+			"Missing NXDK_DIR environment variable.\n"
+			"\n"
+			"To fix this issue:\n"
+			"1. Install NXDK from: https://github.com/XboxDev/nxdk\n"
+			"2. Set NXDK_DIR environment variable: set NXDK_DIR=C:\\path\\to\\nxdk\n"
+			"3. Use NXDK toolchain: -DCMAKE_TOOLCHAIN_FILE=$NXDK_DIR/share/toolchain-nxdk.cmake\n"
+			"4. Use provided build scripts: build_xbox.bat, quick_xbox_build.bat, or Build-Xbox.ps1\n"
+			"\n"
+			"For detailed instructions, see: platforms/xbox/README.Xbox.md"
+		)
+	ENDIF()
+	
+	# Validate NXDK installation
+	IF(NOT EXISTS "$ENV{NXDK_DIR}")
+		MESSAGE(FATAL_ERROR 
+			"NXDK directory not found: $ENV{NXDK_DIR}\n"
+			"Please verify NXDK installation and NXDK_DIR environment variable."
+		)
+	ENDIF()
+	
+	# Validate NXDK toolchain file
+	IF(NOT EXISTS "$ENV{NXDK_DIR}/share/toolchain-nxdk.cmake")
+		MESSAGE(FATAL_ERROR 
+			"NXDK CMake toolchain file not found!\n"
+			"Expected: $ENV{NXDK_DIR}/share/toolchain-nxdk.cmake\n"
+			"Please ensure NXDK is properly installed and up to date."
+		)
+	ENDIF()
+	
+	# Check if we're actually using NXDK toolchain
+	IF(NOT CMAKE_TOOLCHAIN_FILE OR NOT CMAKE_TOOLCHAIN_FILE MATCHES "toolchain-nxdk.cmake")
+		MESSAGE(FATAL_ERROR 
+			"Xbox build requires NXDK toolchain!\n"
+			"Current toolchain: ${CMAKE_TOOLCHAIN_FILE}\n"
+			"\n"
+			"Use: -DCMAKE_TOOLCHAIN_FILE=$ENV{NXDK_DIR}/share/toolchain-nxdk.cmake\n"
+			"Or use the provided build scripts for automatic setup."
+		)
+	ENDIF()
+	
+	MESSAGE(STATUS "Xbox build: NXDK environment validated successfully")
+	MESSAGE(STATUS "Xbox build: NXDK_DIR = $ENV{NXDK_DIR}")
+	MESSAGE(STATUS "Xbox build: Using toolchain = ${CMAKE_TOOLCHAIN_FILE}")
 ENDIF()
 
 # Xbox-specific fix for Windows long path issues
