@@ -54,15 +54,37 @@ echo [INFO] Checking build environment...
 
 REM Check for NXDK
 if not defined NXDK_DIR (
+    echo.
     echo [ERROR] NXDK_DIR environment variable not set!
-    echo [ERROR] Please install NXDK and set NXDK_DIR to the installation path.
-    echo [ERROR] Example: set NXDK_DIR=C:\nxdk
+    echo [ERROR] 
+    echo [ERROR] Xbox builds require NXDK ^(Xbox Development Kit^) to be installed and configured.
+    echo [ERROR]
+    echo [SOLUTION] To fix this issue:
+    echo [SOLUTION] 1. Download NXDK from: https://github.com/XboxDev/nxdk
+    echo [SOLUTION] 2. Follow NXDK installation instructions
+    echo [SOLUTION] 3. Set NXDK_DIR environment variable:
+    echo [SOLUTION]    Example: set NXDK_DIR=C:\nxdk
+    echo [SOLUTION] 4. Restart command prompt after setting environment variable
+    echo [SOLUTION] 5. Re-run this script
+    echo [SOLUTION]
+    echo [HELP] For detailed Xbox build instructions, see:
+    echo [HELP] - platforms\xbox\README.Xbox.md
+    echo [HELP] - Xbox_Build_Scripts_README.md
+    echo.
     goto error_exit
 )
 
 if not exist "%NXDK_DIR%" (
+    echo.
     echo [ERROR] NXDK directory not found: %NXDK_DIR%
-    echo [ERROR] Please verify NXDK installation path.
+    echo [ERROR]
+    echo [SOLUTION] Please verify NXDK installation:
+    echo [SOLUTION] 1. Check that NXDK_DIR points to correct installation
+    echo [SOLUTION] 2. Verify NXDK was installed successfully
+    echo [SOLUTION] 3. Try reinstalling NXDK if the directory is missing
+    echo [SOLUTION]
+    echo [HELP] Get NXDK from: https://github.com/XboxDev/nxdk
+    echo.
     goto error_exit
 )
 
@@ -70,8 +92,20 @@ echo [OK] NXDK found at: %NXDK_DIR%
 
 REM Check for NXDK toolchain file
 if not exist "%NXDK_DIR%\share\toolchain-nxdk.cmake" (
+    echo.
     echo [ERROR] NXDK CMake toolchain file not found!
     echo [ERROR] Expected: %NXDK_DIR%\share\toolchain-nxdk.cmake
+    echo [ERROR]
+    echo [SOLUTION] This indicates an incomplete or corrupt NXDK installation:
+    echo [SOLUTION] 1. Verify NXDK was installed completely
+    echo [SOLUTION] 2. Check NXDK version compatibility
+    echo [SOLUTION] 3. Try reinstalling NXDK
+    echo [SOLUTION]
+    echo [HELP] Expected NXDK structure should include:
+    echo [HELP] - %NXDK_DIR%\share\toolchain-nxdk.cmake
+    echo [HELP] - %NXDK_DIR%\bin\
+    echo [HELP] - %NXDK_DIR%\lib\
+    echo.
     goto error_exit
 )
 
@@ -80,8 +114,17 @@ echo [OK] NXDK CMake toolchain found
 REM Check for CMake
 cmake --version >nul 2>&1
 if errorlevel 1 (
+    echo.
     echo [ERROR] CMake not found in PATH!
-    echo [ERROR] Please install CMake 3.25 or later.
+    echo [ERROR]
+    echo [SOLUTION] CMake 3.25 or later is required for Xbox builds:
+    echo [SOLUTION] 1. Download CMake from: https://cmake.org/download/
+    echo [SOLUTION] 2. Install CMake and add to PATH
+    echo [SOLUTION] 3. Restart command prompt
+    echo [SOLUTION] 4. Verify installation: cmake --version
+    echo [SOLUTION]
+    echo [HELP] Alternative: Use full path to cmake.exe
+    echo.
     goto error_exit
 )
 
@@ -90,8 +133,20 @@ echo [OK] CMake is available
 REM Check for Make
 make --version >nul 2>&1
 if errorlevel 1 (
+    echo.
     echo [ERROR] Make not found in PATH!
-    echo [ERROR] Please install MinGW, MSYS2, or ensure make is in PATH.
+    echo [ERROR]
+    echo [SOLUTION] Make is required to compile the project:
+    echo [SOLUTION] 1. Install MinGW from: https://www.mingw-w64.org/
+    echo [SOLUTION] 2. OR install MSYS2 from: https://www.msys2.org/
+    echo [SOLUTION] 3. Add make.exe to your system PATH
+    echo [SOLUTION] 4. Restart command prompt
+    echo [SOLUTION] 5. Verify installation: make --version
+    echo [SOLUTION]
+    echo [HELP] Common make.exe locations:
+    echo [HELP] - MinGW: C:\MinGW\bin\make.exe
+    echo [HELP] - MSYS2: C:\msys64\usr\bin\make.exe
+    echo.
     goto error_exit
 )
 
@@ -171,7 +226,27 @@ cmake .. ^
     -G "MinGW Makefiles"
 
 if errorlevel 1 (
+    echo.
     echo [ERROR] CMake configuration failed!
+    echo [ERROR]
+    echo [TROUBLESHOOTING] Common causes and solutions:
+    echo [TROUBLESHOOTING] 1. NXDK toolchain issues:
+    echo [TROUBLESHOOTING]    - Verify NXDK_DIR points to correct installation
+    echo [TROUBLESHOOTING]    - Check NXDK version compatibility
+    echo [TROUBLESHOOTING]    - Try reinstalling NXDK
+    echo [TROUBLESHOOTING]
+    echo [TROUBLESHOOTING] 2. Missing dependencies:
+    echo [TROUBLESHOOTING]    - Ensure all NXDK dependencies are installed
+    echo [TROUBLESHOOTING]    - Check NXDK installation documentation
+    echo [TROUBLESHOOTING]
+    echo [TROUBLESHOOTING] 3. Path issues:
+    echo [TROUBLESHOOTING]    - Try building from shorter directory path
+    echo [TROUBLESHOOTING]    - Avoid spaces in directory names
+    echo [TROUBLESHOOTING]
+    echo [HELP] For detailed troubleshooting, see:
+    echo [HELP] - platforms\xbox\README.Xbox.md
+    echo [HELP] - NXDK documentation
+    echo.
     cd ..
     goto error_exit
 )
@@ -194,7 +269,26 @@ echo [INFO] Building with %JOBS% parallel jobs...
 make -j%JOBS%
 
 if errorlevel 1 (
+    echo.
     echo [ERROR] Build failed!
+    echo [ERROR]
+    echo [TROUBLESHOOTING] Common build issues and solutions:
+    echo [TROUBLESHOOTING] 1. Compilation errors:
+    echo [TROUBLESHOOTING]    - Check for NXDK compatibility issues
+    echo [TROUBLESHOOTING]    - Verify source code is compatible with Xbox target
+    echo [TROUBLESHOOTING]
+    echo [TROUBLESHOOTING] 2. Linking errors:
+    echo [TROUBLESHOOTING]    - Ensure NXDK libraries are accessible
+    echo [TROUBLESHOOTING]    - Check for missing Xbox-specific dependencies
+    echo [TROUBLESHOOTING]
+    echo [TROUBLESHOOTING] 3. Resource issues:
+    echo [TROUBLESHOOTING]    - Try building with fewer parallel jobs: make -j2
+    echo [TROUBLESHOOTING]    - Ensure sufficient disk space
+    echo [TROUBLESHOOTING]
+    echo [HELP] For detailed troubleshooting, see:
+    echo [HELP] - platforms\xbox\README.Xbox.md
+    echo [HELP] - Build logs above for specific error details
+    echo.
     cd ..
     goto error_exit
 )

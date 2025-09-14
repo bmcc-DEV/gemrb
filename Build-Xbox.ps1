@@ -56,13 +56,37 @@ if (-not $Quick) {
     
     # Check NXDK
     if (-not $env:NXDK_DIR) {
+        Write-Host ""
         Write-Host "[ERROR] NXDK_DIR environment variable not set!" -ForegroundColor Red
-        Write-Host "[ERROR] Please install NXDK and set NXDK_DIR environment variable." -ForegroundColor Red
+        Write-Host "[ERROR]" -ForegroundColor Red
+        Write-Host "[ERROR] Xbox builds require NXDK (Xbox Development Kit) to be installed and configured." -ForegroundColor Red
+        Write-Host "[ERROR]" -ForegroundColor Red
+        Write-Host "[SOLUTION] To fix this issue:" -ForegroundColor Yellow
+        Write-Host "[SOLUTION] 1. Download NXDK from: https://github.com/XboxDev/nxdk" -ForegroundColor Yellow
+        Write-Host "[SOLUTION] 2. Follow NXDK installation instructions" -ForegroundColor Yellow
+        Write-Host "[SOLUTION] 3. Set NXDK_DIR environment variable:" -ForegroundColor Yellow
+        Write-Host "[SOLUTION]    Example: `$env:NXDK_DIR='C:\nxdk'" -ForegroundColor Yellow
+        Write-Host "[SOLUTION] 4. Restart PowerShell after setting environment variable" -ForegroundColor Yellow
+        Write-Host "[SOLUTION] 5. Re-run this script" -ForegroundColor Yellow
+        Write-Host "[SOLUTION]" -ForegroundColor Yellow
+        Write-Host "[HELP] For detailed Xbox build instructions, see:" -ForegroundColor Cyan
+        Write-Host "[HELP] - platforms\xbox\README.Xbox.md" -ForegroundColor Cyan
+        Write-Host "[HELP] - Xbox_Build_Scripts_README.md" -ForegroundColor Cyan
+        Write-Host ""
         exit 1
     }
     
     if (-not (Test-Path $env:NXDK_DIR)) {
+        Write-Host ""
         Write-Host "[ERROR] NXDK directory not found: $env:NXDK_DIR" -ForegroundColor Red
+        Write-Host "[ERROR]" -ForegroundColor Red
+        Write-Host "[SOLUTION] Please verify NXDK installation:" -ForegroundColor Yellow
+        Write-Host "[SOLUTION] 1. Check that NXDK_DIR points to correct installation" -ForegroundColor Yellow
+        Write-Host "[SOLUTION] 2. Verify NXDK was installed successfully" -ForegroundColor Yellow
+        Write-Host "[SOLUTION] 3. Try reinstalling NXDK if the directory is missing" -ForegroundColor Yellow
+        Write-Host "[SOLUTION]" -ForegroundColor Yellow
+        Write-Host "[HELP] Get NXDK from: https://github.com/XboxDev/nxdk" -ForegroundColor Cyan
+        Write-Host ""
         exit 1
     }
     

@@ -4,6 +4,29 @@ This directory contains automated build scripts to streamline the compilation of
 
 ## Scripts Overview
 
+### 0. `validate_xbox_env.bat` - Environment Validation Tool
+**NEW: Recommended first step for new users**
+
+A comprehensive environment validation script that checks all prerequisites before building.
+
+**Features:**
+- Complete NXDK installation validation
+- Required tools availability check (CMake, Make, Git)
+- Repository structure verification
+- Detailed error reporting and solutions
+- Environment readiness confirmation
+
+**Usage:**
+```cmd
+validate_xbox_env.bat
+```
+
+**When to use:**
+- First time Xbox development setup
+- Troubleshooting build environment issues
+- After installing/updating NXDK or tools
+- When build scripts report environment errors
+
 ### 1. `build_xbox.bat` - Comprehensive Windows Batch Script
 **Recommended for most users**
 
@@ -24,10 +47,11 @@ build_xbox.bat [clean|release|debug|quick]
 
 **Examples:**
 ```cmd
-build_xbox.bat                 # Standard release build
-build_xbox.bat clean           # Clean build directory first
-build_xbox.bat debug           # Build debug version
-build_xbox.bat quick           # Skip environment checks
+validate_xbox_env.bat            # Validate environment setup
+build_xbox.bat                   # Standard release build
+build_xbox.bat clean             # Clean build directory first
+build_xbox.bat debug             # Build debug version
+build_xbox.bat quick             # Skip environment checks
 ```
 
 ### 2. `quick_xbox_build.bat` - Simple Quick Build
@@ -114,20 +138,34 @@ After building, follow these steps:
 
 ### Common Issues
 
-1. **"NXDK_DIR not set" error**
+1. **Environment not configured**
+   - **Solution**: Run `validate_xbox_env.bat` first to check your setup
+   - This will identify and provide solutions for configuration issues
+
+2. **"NXDK_DIR not set" error**
    - Install NXDK and set the environment variable
    - Restart your command prompt after setting
+   - Verify with: `echo %NXDK_DIR%`
 
-2. **"CMake not found" error**
+3. **"CMake not found" error**
    - Install CMake and add it to your PATH
-   - Or specify full path to cmake.exe
+   - Restart command prompt after installation
+   - Verify with: `cmake --version`
 
-3. **"Make not found" error**
+4. **"Make not found" error**
    - Install MinGW/MSYS2 or add existing installation to PATH
+   - Restart command prompt after installation
+   - Verify with: `make --version`
 
-4. **Build fails with linking errors**
+5. **Build fails with linking errors**
    - Ensure NXDK is properly installed and configured
    - Check that you're using the correct NXDK version
+   - Run `validate_xbox_env.bat` to verify setup
+
+6. **Path too long errors**
+   - Build from a shorter directory path (e.g., C:\xbox\gemrb)
+   - Avoid deep folder structures and spaces in paths
+   - The build system automatically handles paths up to 300 characters
 
 ### Getting Help
 

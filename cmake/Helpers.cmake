@@ -189,6 +189,20 @@ FUNCTION(CONFIGURE_PYTHON)
 ENDFUNCTION()
 
 FUNCTION(CONFIGURE_SDL SDL_BACKEND)
+	# Xbox/NXDK builds use SDL provided by NXDK toolchain
+	IF(XBOX)
+		MESSAGE(STATUS "Xbox build: Using SDL provided by NXDK toolchain")
+		# For Xbox builds, SDL is provided by NXDK and handled by the toolchain
+		# Mark SDL as found to continue configuration
+		SET_INTERNAL(SDL_FOUND TRUE)
+		SET_INTERNAL(SDL_INCLUDE_DIR "")  # Provided by NXDK toolchain
+		SET_INTERNAL(SDL_LIBRARY "")     # Provided by NXDK toolchain
+		SET(SDL_BACKEND "SDL" CACHE STRING ${SDL_BACKEND_DESCRIPTION} FORCE)
+		MESSAGE(STATUS "Xbox build: SDL backend configured for NXDK")
+		RETURN()
+	ENDIF()
+
+	# Standard SDL detection for non-Xbox platforms
 	# Autodetection mechanism
 	# Default priority to SDL
 	# If both backends are found, preferring SDL2
@@ -230,7 +244,17 @@ FUNCTION(CONFIGURE_SDL SDL_BACKEND)
 
 	IF(NOT (SDL_FOUND OR SDL2_FOUND))
 		MESSAGE(WARNING "Looking for SDL: not found!")
-		MESSAGE(FATAL_ERROR "Please get SDL from www.libsdl.org")
+		MESSAGE(FATAL_ERROR 
+			"SDL library not found!\n"
+			"\n"
+			"For Xbox builds:\n"
+			"- Use -DXBOX=ON with NXDK toolchain\n"
+			"- SDL is provided by NXDK automatically\n"
+			"\n"
+			"For other platforms:\n"
+			"- Install SDL from www.libsdl.org\n"
+			"- Use package manager: apt install libsdl2-dev"
+		)
 	ENDIF()
 
 		# unify SDL variables, so we don't have to differentiate later
