@@ -86,6 +86,7 @@ using SClass_ID = unsigned long;
 #define IE_WMP_CLASS_ID        0x000003F7
 #define IE_SCRIPT_CLASS_ID     0x000D0000
 #define IE_GUI_SCRIPT_CLASS_ID 0x000E0000
+#define IE_CPP_SCRIPT_CLASS_ID 0x000F0000
 
 // !!! Update the PLUGIN_BASE_VERSION, if the list below is reordered !!!
 // !!! or entries inserted in the middle.                             !!!
