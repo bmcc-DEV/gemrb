@@ -26,6 +26,13 @@
 	#include <tracy/TracyOpenGL.hpp>
 #endif
 
+// Xbox platform support
+#ifdef _XBOX
+	#include "../../platforms/xbox/Xbox.h"
+	#include "../../platforms/xbox/XboxController.h"
+	#include "../../platforms/xbox/XboxMemory.h"
+#endif
+
 // don't move this up
 #include <SDL2/SDL_syswm.h>
 
@@ -92,6 +99,13 @@ SDL20VideoDriver::~SDL20VideoDriver() noexcept
 		SDL_GameControllerClose(gameController);
 	}
 
+// Shutdown Xbox platform support
+#ifdef _XBOX
+	XboxMemoryManager::Shutdown();
+	XboxController::Shutdown();
+	XboxPlatform::Shutdown();
+#endif
+
 	// we must release all buffers before SDL_DestroyRenderer
 	// we cant rely on the base destructor here
 	scratchBuffer = nullptr;
@@ -119,6 +133,13 @@ int SDL20VideoDriver::Init()
 			}
 		}
 	}
+#endif
+
+// Initialize Xbox platform support
+#ifdef _XBOX
+	XboxPlatform::Initialize();
+	XboxController::Initialize();
+	XboxMemoryManager::Initialize();
 #endif
 
 	return ret;
@@ -808,7 +829,13 @@ int SDL20VideoDriver::ProcessEvent(const SDL_Event& event)
 			break;
 		case SDL_CONTROLLERAXISMOTION:
 			{
-				float pct = event.caxis.value / float(sizeof(Sint16));
+				float pct = event.caxis.value / float(SHRT_MAX);
+
+	#ifdef _XBOX
+				// Apply Xbox deadzone
+				pct = XboxController::ApplyDeadzone(pct, 0.15f);
+	#endif
+
 				bool xaxis = event.caxis.axis % 2;
 				// FIXME: I'm sure this delta needs to be scaled
 				int delta = xaxis ? pct * screenSize.w : pct * screenSize.h;
@@ -820,10 +847,33 @@ int SDL20VideoDriver::ProcessEvent(const SDL_Event& event)
 		case SDL_CONTROLLERBUTTONDOWN:
 		case SDL_CONTROLLERBUTTONUP:
 			{
-				bool down = (event.type == SDL_JOYBUTTONDOWN) ? true : false;
+				bool down = (event.type == SDL_CONTROLLERBUTTONDOWN) ? true : false;
 				EventButton btn = EventButton(event.cbutton.button);
 				e = EventMgr::CreateControllerButtonEvent(btn, down);
 				EvntManager->DispatchEvent(std::move(e));
+
+	// Xbox-specific controller features
+	#ifdef _XBOX
+				// Trigger rumble for certain button presses
+				if (down) {
+					switch (btn) {
+						case CONTROLLER_BUTTON_A:
+							// Light rumble for selection
+							if (gameController) {
+								SDL_GameControllerRumble(gameController, 0x1000, 0x1000, 100);
+							}
+							break;
+						case CONTROLLER_BUTTON_B:
+							// Lighter rumble for back/cancel
+							if (gameController) {
+								SDL_GameControllerRumble(gameController, 0x800, 0x800, 80);
+							}
+							break;
+						default:
+							break;
+					}
+				}
+	#endif
 			}
 			break;
 #endif
