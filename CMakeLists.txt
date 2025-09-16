@@ -58,6 +58,7 @@ OPTION(DISABLE_WERROR "Do not treat warnings as errors" OFF)
 OPTION(USE_TRACY "Build with Tracy support" OFF)
 
 OPTION(USE_SDL_CONTROLLER_API "Enable SDL controller APIs. (disable if you plan on handling controller input in an external program like gptokeyb)" ON)
+OPTION(ENABLE_XBOX_PLATFORM "Enable Xbox platform support (experimental)" OFF)
 
 #VCPKG dll deployment is circumvented because it doesn't currently work for gemrb
 IF(WIN32 AND _VCPKG_INSTALLED_DIR)
@@ -141,6 +142,13 @@ IF(USE_TRACY)
 ENDIF()
 
 ADD_SUBDIRECTORY(gemrb)
+
+# Add Xbox platform support if enabled
+IF(ENABLE_XBOX_PLATFORM)
+	MESSAGE(STATUS "Building with Xbox platform support")
+	ADD_SUBDIRECTORY(platforms/xbox)
+ENDIF()
+
 INSTALL_APP_RESOURCES()
 MAKE_UNINSTALL_TARGET()
 MAKE_DIST_TARGET()
@@ -172,6 +180,7 @@ PRINT_OPTION(OPENGL_BACKEND)
 PRINT_OPTION(SANITIZE)
 PRINT_OPTION(USE_TESTS)
 PRINT_OPTION(USE_TRACY)
+PRINT_OPTION(ENABLE_XBOX_PLATFORM)
 message(STATUS "")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Target bitness: ${CMAKE_SIZEOF_VOID_P}*8")
